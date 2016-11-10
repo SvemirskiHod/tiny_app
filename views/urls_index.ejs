@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>TinyApp</title>
+</head>
+<body background="/cat.jpg" >
+<!-- <img src="/cat.jpg" alt="Cat not found" style="width:160px;height:120px;"> -->
+<div style="background-color:white;" ><center> <h1>  Joao's Awesome URL Shortner </h1>
+  <h2> List of URLs</h2>
+  <table style="width:68%">
+</center></div>
+    <tr>
+      <td> <b> Short URL </b> </td>
+      <td> <b> Long URL </b> </td>
+    </tr>
+    <% for (var key in urls){ %>
+    <tr>
+      <td><%= key %>: </td> <td> <%= urls[key] %> </td>
+      <td>
+        <form method="GET" action= <%= `/urls/${key}/edit` %> >
+          <input type="submit" value="Edit this URL">
+        </form>
+      </td>
+      <td>
+        <form method="POST" action= <%= `/urls/${key}/delete` %> >
+          <input type="submit" value="Delete ♺">
+        </form>
+      </td>
+    </tr>
+    <% } %>
+  </table>
+  <table style="width:45%">
+    <tr>
+      <th>
+        <a href="http://localhost:8080/urls/new"> Click here to shorten a new URL </a>
+      </th>
+    </tr>
+  </table>
+</body>
+</html>
