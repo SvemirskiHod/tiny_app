@@ -1,1 +1,24 @@
-<body> <center>  Joao's Awesome URL shortener </center> </body>
+<body background="/cat.jpg">
+<p>
+<div style="background-color:white;">
+  <% if(username) { %>
+  <center>
+  <b> <font size="+1"> Logged in as:  </b> <%= username %>
+      <form action="/logout" method="POST">
+        <input type="submit" value="logout" />
+      </form>
+    </font>
+  </center>
+    <% } else{ %>
+    <center>
+    <form action="/login" method="POST" style="margin:10px;">
+      <label for="username">Please Log in:</label>
+      <input id="username" type="text" name="username" placeholder="Username" style="width: 300px">
+      <input type="submit" value="Login">
+    </form>
+    </center>
+    <% } %>
+    </div>
+</p>
+</body>
+

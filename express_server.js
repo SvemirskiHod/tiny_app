@@ -1,10 +1,11 @@
 //TODO : Make short links and long URLs Clickable links
-//
 
 //"use strict";
+var cookieParser = require('cookie-parser')
 var express = require("express");
 var app = express();
 app.use(express.static('public'));
+app.use(cookieParser())
 var PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
@@ -16,39 +17,46 @@ var urlDatabase = {
   "bh6tsa": "http://www.google.ca"
 };
 
-app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+////////////////////////////
+/// Begin Route Handling ///
+////////////////////////////
+app.get("/urls", (req, res) => { //Home Page for URLs
+  let templateVars = {
+    username: req.cookies["username"],
+    urls: urlDatabase
+  };
   res.render("urls_index", templateVars);
 });
 
-app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+app.get("/urls/new", (req, res) => { //Renders page where users create new links
+  res.render("urls_new", {username: req.cookies["username"]});
 });
 
-app.post("/urls", (req, res) => {
+app.post("/urls", (req, res) => {     //Applies logic where new URL is created and indexed with long URL
   newShort = generateRandomString(6);
   urlDatabase[newShort] = req.body.longURL;
-  console.log(newShort);
-  console.log(urlDatabase[newShort]);  // debug statement to see POST parameters
-  res.redirect("http://localhost:8080/urls/"); //+newShort);        // Respond with 'Ok' (we will replace this)
+  res.redirect("/urls"); //+newShort);  //!!!!!!!!!!!!!!!!!!
 });
 
-app.post("/urls/:id/delete", (req, res) => {
+app.post("/urls/:id/delete", (req, res) => { //Handles request to delete a link
   delete urlDatabase[req.params.id];
   res.redirect("/urls");
 });
 
-app.get("/urls/:id/edit", (req, res) => {
-  res.render("urls_edit", {id : req.params.id});
+app.get("/urls/:id/edit", (req, res) => {  //Renders page where users edit links
+  res.render("urls_edit", {
+    id : req.params.id,
+    username: req.cookies["username"]
+  });
 });
 
-app.post("/urls/:id", (req, res) => {
+app.post("/urls/:id", (req, res) => { //Handles the request to edit an exisitng link
   urlDatabase[req.params.id] = req.body.replacementURL;
   res.redirect("/urls");
 });
 
 
-app.get("/urls/:shortURL", (req, res) => {
+app.get("/urls/:shortURL", (req, res) => { // Redirects to Full websites using short URL
   if(urlDatabase.hasOwnProperty(req.params.shortURL)){
   let longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
@@ -58,9 +66,22 @@ app.get("/urls/:shortURL", (req, res) => {
   }
 });
 
+app.post("/login", (req, res) => {  //Sends client cookie with their username, enables login
+  res.cookie("username", (req.body.username));
+  res.redirect("/urls")
+});
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("username");
+  res.redirect("/urls");
+});
+
+////////////////////////////
+/// Finish Route Handling///
+////////////////////////////
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`Tiny_app server listening on port ${PORT}!`);
 });
 
 
