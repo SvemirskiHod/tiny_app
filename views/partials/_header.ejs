@@ -1,24 +1,27 @@
 <body background="/cat.jpg">
-<p>
-<div style="background-color:white;">
-  <% if(username) { %>
-  <center>
-  <b> <font size="+1"> Logged in as:  </b> <%= username %>
-      <form action="/logout" method="POST">
-        <input type="submit" value="logout" />
-      </form>
-    </font>
-  </center>
-    <% } else{ %>
-    <center>
-    <form action="/login" method="POST" style="margin:10px;">
-      <label for="username">Please Log in:</label>
-      <input id="username" type="text" name="username" placeholder="Username" style="width: 300px">
-      <input type="submit" value="Login">
-    </form>
-    </center>
-    <% } %>
-    </div>
-</p>
-</body>
+  <p>
+    <div style="background-color:white;">
+      <% if(email) { %>
+        <center>
+        <b> <font size="+1"> Logged in as:   </b> <%= email %>
+          <form action="/logout" method="POST">
+            <input type="submit" value="logout" />
+          </form>
+        </font>
+      </center>
+      <% } else{ %>
+        <center>
+          <form method="GET" action= <%= `/login` %> >
+            <label for="login"> Please Login :</label>
+            <input type="submit" value="Login">
+          </form>
+          <form method="GET" action= <%= `/register` %> >
+            <label for="register">Or Register :</label>
+            <input type="submit" value="Register">
+          </form>
+        </center>
+        <% } %>
+      </div>
+    </p>
+  </body>
 
