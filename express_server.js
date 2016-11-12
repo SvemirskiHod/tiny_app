@@ -1,29 +1,21 @@
-//TODO : Make short links and long URLs Clickable links
-
 //"use strict";
 const bcrypt = require('bcrypt');
-var cookieSession = require('cookie-session');
-var express = require("express");
-var app = express();
+const cookieSession = require('cookie-session');
+const express = require("express");
+const app = express();
 app.use(express.static('public'));
-var PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
   name: 'session',
   keys: ["random key"],
-
-  // Cookie Options
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  maxAge: 24 * 60 * 60 * 1000 //
 }))
-
-
 app.set("view engine", "ejs");
 
-const usersDatabase = {}
-
-var urlDatabase = {};
-
+const usersDatabase = {};
+const urlDatabase = {};
 ///////////////////
 /// FUNCTIONS   ///
 ///////////////////
@@ -86,6 +78,10 @@ app.get("/urls", (req, res) => { //Home Page for URLs
   }
 });
 
+app.get("/", (req, res) => {
+  res.redirect("/urls");
+});
+
 app.get("/urls/new", (req, res) => { //Renders page where users create new links
   res.render("urls_new", {email: req.session.email});
 });
@@ -93,8 +89,7 @@ app.get("/urls/new", (req, res) => { //Renders page where users create new links
 app.post("/urls", (req, res) => {     //Applies logic where new URL is created and indexed with long URL
   newShort = generateRandomString(6);
   urlDatabase[req.session.email][newShort] = req.body.longURL;
-  console.log(urlDatabase);
-  res.redirect("/urls"); //+newShort);  //!!!!!!!!!!!!!!!!!!
+  res.redirect("/urls");
 });
 
 app.post("/urls/:id/delete", (req, res) => { //Handles request to delete a link
@@ -121,14 +116,17 @@ app.get("/urls/:shortURL", (req, res) => { // Redirects to Full websites using s
     let longURL = urlDatabase[email][req.params.shortURL];
     res.redirect(longURL);
     }
-    else {
-      res.send("This specified short link does not exist.");
-    }
   }
+  res.send("This specified short link does not exist.");
 });
 
 app.get("/login", (req, res) =>{  // Directs user to login form
+  if(req.session.email){
+    res.redirect("/");
+  }
   res.render("urls_login", {email: req.session.email});
+
+
 });
 
 app.post("/login", (req, res) => {  //Authenticates passwords and email for login
@@ -140,15 +138,18 @@ app.post("/login", (req, res) => {  //Authenticates passwords and email for logi
       res.redirect("/urls")
     }
     else{
-      res.status(403).send("Passwords do not match.");
+      res.status(403).send("Error 403. Passwords do not match.");
     }
   }
   else{
-      res.status(403).send("Email does not exist in our records.");
+      res.status(403).send("Error 403. Email does not exist in our records.");
   }
 });
 
 app.get("/register", (req, res) => { //Directs user to register form
+  if(req.session.email){
+    res.redirect("/");
+  }
   res.render("urls_register", {email: req.session.email});
 });
 
@@ -158,10 +159,9 @@ app.post("/register", (req, res) => { //Registers users and updates the database
   }
   else if(req.body.email && req.body.password){
     const userId = generateId(6);
-    let hashedPass = bcrypt.hashSync(req.body.password, 10);
+    const hashedPass = bcrypt.hashSync(req.body.password, 10);
     urlDatabase[req.body.email] = {};
     usersDatabase[userId] = {id: userId, email: req.body.email, password: hashedPass}
-    console.log(urlDatabase);
     req.session.email = req.body.email;
     res.redirect("/urls");
   }
