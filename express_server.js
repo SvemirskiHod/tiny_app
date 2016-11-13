@@ -4,7 +4,7 @@ const cookieSession = require('cookie-session');
 const express = require("express");
 const app = express();
 app.use(express.static('public'));
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieSession({
@@ -19,6 +19,17 @@ const urlDatabase = {};
 ///////////////////
 /// FUNCTIONS   ///
 ///////////////////
+
+const checkLink = function (shortLink){
+  for (var email in urlDatabase){
+    for (var shortUrl in urlDatabase[email]){
+      if (shortLink === shortUrl){
+        return urlDatabase[email][shortUrl];
+      }
+    }
+  }
+  return false;
+}
 
 const findPassword = function (email){
   for (var userKey in usersDatabase){
@@ -83,25 +94,43 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => { //Renders page where users create new links
+  if(req.session.email){
   res.render("urls_new", {email: req.session.email});
+  }
+  else {
+    res.send("Please login before attempting to crete a link.");
+  }
 });
 
 app.post("/urls", (req, res) => {     //Applies logic where new URL is created and indexed with long URL
+  if(req.session.email){
   newShort = generateRandomString(6);
   urlDatabase[req.session.email][newShort] = req.body.longURL;
   res.redirect("/urls");
+  }
+  else {
+    res.send("Please login before attempting to crete a link.");
+  }
 });
 
 app.post("/urls/:id/delete", (req, res) => { //Handles request to delete a link
+  if(req.session.email){
   delete urlDatabase[req.session.email][req.params.id];
   res.redirect("/urls");
+  }
+
 });
 
 app.get("/urls/:id/edit", (req, res) => {  //Renders page where users edit links
-  res.render("urls_edit", {
-    id: req.params.id,
-    email: req.session["email"]
-  });
+  if(req.session.email){
+    res.render("urls_edit", {
+      id: req.params.id,
+      email: req.session["email"]
+    });
+  }
+  else {
+    res.send("You must be logged in to edit a link.")
+  }
 });
 
 app.post("/urls/:id", (req, res) => { //Handles the request to edit an exisitng link
@@ -110,14 +139,17 @@ app.post("/urls/:id", (req, res) => { //Handles the request to edit an exisitng 
 });
 
 
-app.get("/urls/:shortURL", (req, res) => { // Redirects to Full websites using short URL
-  for (var email in urlDatabase){
+app.get("/urls/:shortURL", (req, res) => { // Redirects to Full websites using short URL (If logged in)
+  if (req.session.email){
     if(urlDatabase[email].hasOwnProperty(req.params.shortURL)){
     let longURL = urlDatabase[email][req.params.shortURL];
     res.redirect(longURL);
     }
+    else {
+      res.send("This specified short link does not exist in your account.")
+    }
   }
-  res.send("This specified short link does not exist.");
+  res.send("Please login before attemting to access your short links.");
 });
 
 app.get("/login", (req, res) =>{  // Directs user to login form
@@ -175,6 +207,26 @@ app.post("/logout", (req, res) => { // Handles log out functionality by clearnin
   res.redirect("/urls");
 });
 
+app.get("/u", (req, res) => { // Renders page with everyone's links
+  res.render("urls_u", {
+    email: req.session.email,
+    urls: urlDatabase});
+});
+
+app.get("/u/:shortURL", (req, res) => { // Redirects to Full websites using short URL (Anyone can use)
+  let link = checkLink(req.params.shortURL)
+
+  if(link !== false){
+    res.redirect(link);
+  }
+  else{
+    res.send("This short link doe not exist.");
+  }
+
+
+
+});
+
 ////////////////////////////
 /// Finish Route Handling///
 ////////////////////////////
@@ -184,7 +236,7 @@ app.listen(PORT, () => {
 });
 
 
-
+ // for (var email in urlDatabase){
 
 
 
