@@ -2,10 +2,15 @@
   <p>
     <div style="background-color:white;">
       <% if(email) { %>
+        <br>
         <center>
-        <b> <font size="+1"> Logged in as:   </b> <%= email %>
           <form action="/logout" method="POST">
-            <input type="submit" value="logout" />
+             <label for="home"> <b> <font size="+1"> Logged in as: </b> <%= email %> :</label>
+              <input type="submit" value="logout" />
+          </form>
+          <form method="GET" action= <%= `/urls` %> >
+            <label for="home"> See your Links :</label>
+            <input type="submit" value="Go">
           </form>
         </font>
       </center>
@@ -19,12 +24,15 @@
             <label for="register">Register :</label>
             <input type="submit" value="Register">
           </form>
-          <form method="GET" action= <%= `/u` %> >
+
+        </center>
+        <% } %>
+        <center>
+        <form method="GET" action= <%= `/u` %> >
             <label for="links"> See All User Created Links :</label>
             <input type="submit" value="Go">
           </form>
-        </center>
-        <% } %>
+          </center>
       </div>
     </p>
   </body>
