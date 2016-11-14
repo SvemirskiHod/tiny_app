@@ -35,7 +35,7 @@ const checkLink = function (shortLink){
 const findPassword = function (email){
   for (var userKey in usersDatabase){
     if (usersDatabase[userKey].email === email){
-        return usersDatabase[userKey].password;
+      return usersDatabase[userKey].password;
     }
   }
 }
@@ -43,7 +43,7 @@ const findPassword = function (email){
 const checkEmail = function (email){
   for (var userKey in usersDatabase){
     if (usersDatabase[userKey].email === email){
-        return true;
+      return true;
     }
   }
   return false;
@@ -53,8 +53,8 @@ const generateRandomString = function(lengthOfString){
   let randomString = "";
   const characters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   for (var i = 0; i < lengthOfString; i++){
-  random  = Math.floor(Math.random() * characters.length);
-  randomString += characters[random];
+    random  = Math.floor(Math.random() * characters.length);
+    randomString += characters[random];
   }
   return randomString;
 }
@@ -63,8 +63,8 @@ const generateId = function(lengthOfId){
   let randomString = "";
   const characters = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   for (var i = 0; i < lengthOfId; i++){
-  random  = Math.floor(Math.random() * characters.length);
-  randomString += characters[random];
+    random  = Math.floor(Math.random() * characters.length);
+    randomString += characters[random];
   }
   return randomString;
 }
@@ -77,6 +77,7 @@ const generateId = function(lengthOfId){
 /// Begin Route Handling ///
 ////////////////////////////
 
+
 app.get("/u", (req, res) => { // Home page with everyone's links
   res.render("urls_u", {
     email: req.session.email,
@@ -84,12 +85,7 @@ app.get("/u", (req, res) => { // Home page with everyone's links
 });
 
 app.get("/", (req, res) => { //Simple redirect
-  if(req.cookies.email){
-  res.redirect("/urls");
-  }
-  else {
-    res.redirect("/u")
-  }
+    res.redirect("/urls");
 });
 
 app.get("/register", (req, res) => { //Directs user to register form
@@ -136,7 +132,7 @@ app.post("/login", (req, res) => {  //Authenticates passwords and email for logi
     }
   }
   else{
-      res.status(403).send("Error 403. Email does not exist in our records.");
+    res.status(403).send("Error 403. Email does not exist in our records.");
   }
 });
 
@@ -146,7 +142,7 @@ app.get("/urls", (req, res) => { //Home Page for Logged in users. Displays their
     urls: urlDatabase
   };
   if (req.session.email){
-  res.render("urls_index", templateVars);
+    res.render("urls_index", templateVars);
   }
   else{
     res.redirect("/login");
@@ -155,7 +151,7 @@ app.get("/urls", (req, res) => { //Home Page for Logged in users. Displays their
 
 app.get("/urls/new", (req, res) => { //Renders page where users create new links
   if(req.session.email){
-  res.render("urls_new", {email: req.session.email});
+    res.render("urls_new", {email: req.session.email});
   }
   else {
     res.send("Please login before attempting to crete a link.");
@@ -164,9 +160,14 @@ app.get("/urls/new", (req, res) => { //Renders page where users create new links
 
 app.post("/urls", (req, res) => {     //Applies logic when new URL is created and indexed with long URL
   if(req.session.email){
-  newShort = generateRandomString(6);
-  urlDatabase[req.session.email][newShort] = req.body.longURL;
-  res.redirect("/urls");
+    if (req.body.longURL.indexOf("http:/") !== -1 || req.body.longURL.indexOf("https:/") !== -1){
+      newShort = generateRandomString(6);
+      urlDatabase[req.session.email][newShort] = req.body.longURL;
+      res.redirect("/urls");
+    }
+    else{
+      res.send("Please begin your URL with http:/ or https:/");
+    }
   }
   else {
     res.send("Please login before attempting to crete a link.");
@@ -175,8 +176,8 @@ app.post("/urls", (req, res) => {     //Applies logic when new URL is created an
 
 app.post("/urls/:id/delete", (req, res) => { //Handles request to delete a link
   if(req.session.email){
-  delete urlDatabase[req.session.email][req.params.id];
-  res.redirect("/urls");
+    delete urlDatabase[req.session.email][req.params.id];
+    res.redirect("/urls");
   }
   else {
     res.send ("You cannot delete links without being logged in.")
@@ -204,8 +205,8 @@ app.post("/urls/:id", (req, res) => { //Handles the request to edit an exisitng 
 app.get("/urls/:shortURL", (req, res) => { // Redirects to Full websites using short URL (If logged in)
   if (req.session.email){
     if(urlDatabase[email].hasOwnProperty(req.params.shortURL)){
-    let longURL = urlDatabase[email][req.params.shortURL];
-    res.redirect(longURL);
+      let longURL = urlDatabase[email][req.params.shortURL];
+      res.redirect(longURL);
     }
     else {
       res.send("This specified short link does not exist in your account.")
