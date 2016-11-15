@@ -20,7 +20,7 @@
     <% for (var email in urls){ %>
       <% for (var shortUrl in urls[email]){ %>
       <tr>
-        <td> <a href="/u/<%= shortUrl %>"> <%= shortUrl %>: </a> </td>
+        <td> <a href="/u/<%= shortUrl %>"> <%= shortUrl %> </a> </td>
         <td> <a href="/u/<%= shortUrl %>"> <%= urls[email][shortUrl] %> </a> </td>
         <td>
         </td>

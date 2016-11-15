@@ -170,7 +170,7 @@ app.post("/urls", (req, res) => {     //Applies logic when new URL is created an
     }
   }
   else {
-    res.send("Please login before attempting to crete a link.");
+    res.send("Please login before attempting to create a link.");
   }
 });
 
@@ -188,7 +188,8 @@ app.get("/urls/:id/edit", (req, res) => {  //Renders page where users edit links
   if(req.session.email){
     res.render("urls_edit", {
       id: req.params.id,
-      email: req.session["email"]
+      email: req.session["email"],
+      longURL: urlDatabase[req.session.email][req.params.id]
     });
   }
   else {
@@ -201,18 +202,20 @@ app.post("/urls/:id", (req, res) => { //Handles the request to edit an exisitng 
   res.redirect("/urls");
 });
 
-
 app.get("/urls/:shortURL", (req, res) => { // Redirects to Full websites using short URL (If logged in)
+  //console.log(req.session.email);
   if (req.session.email){
-    if(urlDatabase[email].hasOwnProperty(req.params.shortURL)){
-      let longURL = urlDatabase[email][req.params.shortURL];
+    if(urlDatabase[req.session.email].hasOwnProperty(req.params.shortURL)){
+      let longURL = urlDatabase[req.session.email][req.params.shortURL];
       res.redirect(longURL);
     }
     else {
       res.send("This specified short link does not exist in your account.")
     }
   }
-  res.send("Please login before attemting to access your short links.");
+  else{
+  res.send("Please login before attempting to access your short links.");
+  }
 });
 
 app.get("/u/:shortURL", (req, res) => { // Redirects to Full websites using short URL (Anyone can use)
@@ -230,12 +233,14 @@ app.post("/logout", (req, res) => { // Handles log out functionality by clearnin
   res.redirect("/urls");
 });
 
+
 ////////////////////////////
 /// Finish Route Handling///
 ////////////////////////////
 
 app.listen(PORT, () => {
   console.log(`Tiny_app server listening on port ${PORT}!`);
+
 });
 
 

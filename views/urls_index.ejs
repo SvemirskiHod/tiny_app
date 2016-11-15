@@ -18,7 +18,7 @@
     </tr>
     <% for (var shortUrl in urls[email]){ %>
     <tr>
-      <td> <a href="<%= urls[email][shortUrl] %>"> <%= shortUrl %>: </a> </td>
+      <td> <a href="<%= urls[email][shortUrl] %>"> <%= shortUrl %> </a> </td>
       <td> <a href="<%= urls[email][shortUrl] %>"> <%= urls[email][shortUrl] %> </a> </td>
       <td>
         <form method="GET" action= <%= `/urls/${shortUrl}/edit` %> >
