@@ -1,4 +1,4 @@
-//"use strict";
+"use strict";
 const bcrypt = require('bcrypt');
 const cookieSession = require('cookie-session');
 const express = require("express");
@@ -51,6 +51,7 @@ const checkEmail = function (email){
 
 const generateRandomString = function(lengthOfString){
   let randomString = "";
+  let random;
   const characters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   for (var i = 0; i < lengthOfString; i++){
     random  = Math.floor(Math.random() * characters.length);
@@ -61,6 +62,7 @@ const generateRandomString = function(lengthOfString){
 
 const generateId = function(lengthOfId){
   let randomString = "";
+  let random;
   const characters = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   for (var i = 0; i < lengthOfId; i++){
     random  = Math.floor(Math.random() * characters.length);
@@ -77,12 +79,6 @@ const generateId = function(lengthOfId){
 /// Begin Route Handling ///
 ////////////////////////////
 
-
-app.get("/u", (req, res) => { // Home page with everyone's links
-  res.render("urls_u", {
-    email: req.session.email,
-    urls: urlDatabase});
-});
 
 app.get("/", (req, res) => { //Simple redirect
     res.redirect("/urls");
@@ -161,7 +157,7 @@ app.get("/urls/new", (req, res) => { //Renders page where users create new links
 app.post("/urls", (req, res) => {     //Applies logic when new URL is created and indexed with long URL
   if(req.session.email){
     if (req.body.longURL.indexOf("http:/") !== -1 || req.body.longURL.indexOf("https:/") !== -1){
-      newShort = generateRandomString(6);
+      let newShort = generateRandomString(6);
       urlDatabase[req.session.email][newShort] = req.body.longURL;
       res.redirect("/urls");
     }
