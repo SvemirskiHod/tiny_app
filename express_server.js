@@ -1,5 +1,5 @@
 "use strict";
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt-nodejs');
 const cookieSession = require('cookie-session');
 const express = require("express");
 const app = express();
@@ -238,9 +238,3 @@ app.listen(PORT, () => {
   console.log(`Tiny_app server listening on port ${PORT}!`);
 
 });
-
-
-
-
-
-
