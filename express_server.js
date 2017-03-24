@@ -1,17 +1,24 @@
 "use strict";
 const bcrypt = require('bcrypt-nodejs');
-const cookieSession = require('cookie-session');
+const session = require('express-session');
 const express = require("express");
-const app = express();
-app.use(express.static('public'));
-const PORT = process.env.PORT || 3000;
 const bodyParser = require("body-parser");
+
+const app = express();
+
+const PORT = process.env.PORT || 3000;
+
+app.use(express.static('public'));
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieSession({
+
+app.use(session({
   name: 'session',
-  keys: ["random key"],
-  maxAge: 24 * 60 * 60 * 1000 // I copied this from the readme, didn't want to mess with it!
-}))
+  secret: 'SUPER_SECRET_HERE',
+  maxAge: 24 * 60 * 60 * 1000, // I copied this from the readme, didn't want to mess with it!
+  saveUninitialized: false,
+  resave: false
+}));
+
 app.set("view engine", "ejs");
 
 const usersDatabase = {};
