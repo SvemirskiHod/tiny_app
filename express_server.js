@@ -104,7 +104,7 @@ app.post("/register", (req, res) => { //Registers users and updates the database
   }
   else if(req.body.email && req.body.password){
     const userId = generateId(6);
-    const hashedPass = bcrypt.hashSync(req.body.password, 10);
+    const hashedPass = bcrypt.hashSync(String(req.body.password));
     urlDatabase[req.body.email] = {};
     usersDatabase[userId] = {id: userId, email: req.body.email, password: hashedPass}
     req.session.email = req.body.email;
@@ -232,8 +232,9 @@ app.get("/u/:shortURL", (req, res) => { // Redirects to Full websites using shor
 });
 
 app.post("/logout", (req, res) => { // Handles log out functionality by clearning cookies
-  req.session = null;
-  res.redirect("/urls");
+  req.session.destroy(function(err) {
+    res.redirect("/urls");
+  })
 });
 
 
